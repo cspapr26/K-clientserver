@@ -1,0 +1,46 @@
+{{- if .Values.autoscaling.enabled }}
+# If autoscaling is enabled in .Values, create a HorizontalPodAutoscaler resource.
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  # Naming the HorizontalPodAutoscaler based on the 'fullname' value from the server-chart Helm template.
+  name: {{ include "server-chart.fullname" . }}
+  labels:
+    # Including labels from the 'server-chart.labels' Helm template.
+    {{- include "server-chart.labels" . | nindent 4 }}
+
+spec:
+  # Configuring the target deployment for autoscaling.
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "server-chart.fullname" . }}
+
+  # Setting the minimum number of replicas for autoscaling.
+  minReplicas: {{ .Values.autoscaling.minReplicas }}
+
+  # Setting the maximum number of replicas for autoscaling.
+  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+
+  # Configuring metrics for autoscaling.
+  metrics:
+    {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}
+    # Configuring CPU utilization as a metric if specified in .Values.
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.autoscaling.targetMemoryUtilizationPercentage }}
+    # Configuring memory utilization as a metric if specified in .Values.
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

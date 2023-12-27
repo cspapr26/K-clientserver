@@ -1,0 +1,21 @@
+1)
+docker build . -t cspapr26/server-chart:latest -f dockerfile.server
+docker build . -t cspapr26/client-chart:latest -f dockerfile.client
+
+docker push csapr26/server-chart:latest
+docker push csapr26/client-chart:latest
+
+2)
+helm install --generate-name .
+helm list
+
+3)
+kubectl get pods
+kubectl get services
+
+4)
+kubectl get hpa --watch
+
+5)
+kubectl logs podname
+kubectl delete

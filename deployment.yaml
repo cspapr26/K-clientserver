@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Naming the Deployment based on the 'fullname' value from the server-chart Helm template.
+  name: {{ include "server-chart.fullname" . }}
+  labels:
+    # Including labels from the 'server-chart.labels' Helm template.
+    {{- include "server-chart.labels" . | nindent 4 }}
+
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  # Setting the number of replicas if autoscaling is not enabled.
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+
+  selector:
+    matchLabels:
+      # Including selector labels from the 'server-chart.selectorLabels' Helm template.
+      {{- include "server-chart.selectorLabels" . | nindent 6 }}
+
+  template:
+    metadata:
+      # Including pod annotations from the 'podAnnotations' value in .Values.
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        # Including labels from the 'server-chart.labels' Helm template.
+        {{- include "server-chart.labels" . | nindent 8 }}
+
+        {{- with .Values.podLabels }}
+        # Including additional labels from the 'podLabels' value in .Values.
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+
+    spec:
+      # Including image pull secrets if specified in .Values.
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      # Setting the service account name based on the 'server-chart.serviceAccountName' Helm template.
+      serviceAccountName: {{ include "server-chart.serviceAccountName" . }}
+
+      securityContext:
+        # Including pod security context from .Values.
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            # Including security context from .Values.
+            {{- toYaml .Values.securityContext | nindent 12 }}
+
+          # Defining the Docker image repository and tag for the container.
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          # Configuring ports for the container.
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+
+          # Configuring resource requirements for the container.
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+          {{- with .Values.volumeMounts }}
+          # Mounting volumes to the container based on .Values.volumeMounts.
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+      {{- with .Values.volumes }}
+      # Defining volumes for the pod based on .Values.volumes.
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.nodeSelector }}
+      # Specifying node selector settings for the pod.
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.affinity }}
+      # Defining affinity rules for pod placement.
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.tolerations }}
+      # Configuring tolerations for pod scheduling.
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

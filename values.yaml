@@ -1,0 +1,101 @@
+# Number of replicas for the deployment
+replicaCount: 1
+
+# Image details for the container
+image:
+  repository: "cspapr26/server-chart"
+  tag: "latest"
+  pullPolicy: "Always"
+
+# Secrets for pulling the container image
+imagePullSecrets: []
+
+# Overrides for the name of the server chart and release
+nameOverride: ""
+fullnameOverride: "server-chart"
+
+# Service account configuration
+serviceAccount:
+  create: false
+  automount: false
+  annotations: {}
+  name: ""
+
+# Annotations and labels for pods
+podAnnotations: {}
+podLabels: {}
+
+# Security context for pods
+podSecurityContext: {}
+# fsGroup: 2000
+
+# Security context for server containers
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# Service configuration for the server
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+# Ingress configuration for the server
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  # - secretName: chart-example-tls
+  #   hosts:
+  #     - chart-example.local
+
+# Resource limits and requests for server pods
+resources:
+  requests:
+    memory: "96Mi"
+    cpu: "200"
+  limits:
+    memory: "192Mi"
+    cpu: "400m"
+
+# Horizontal Pod Autoscaler (HPA) configuration
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 12
+  targetCPUUtilizationPercentage: 50
+  targetMemoryUtilizationPercentage: 30
+
+# Additional volumes for the output Deployment definition
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volume mounts for the output Deployment definition
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+# Node selector for server pod assignment
+nodeSelector: {}
+
+# Tolerations for server pod scheduling
+tolerations: []
+
+# Affinity rules for server pod scheduling
+affinity: {}

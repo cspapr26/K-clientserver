@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # Naming the Service based on the 'fullname' value from the server-chart Helm template.
+  name: {{ include "server-chart.fullname" . }}
+  labels:
+    # Including labels from the 'server-chart.labels' Helm template.
+    {{- include "server-chart.labels" . | nindent 4 }}
+
+spec:
+  # Configuring the type of the Service, which is obtained from .Values.
+  type: {{ .Values.service.type }}
+
+  # Configuring ports for the Service.
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: TCP
+      name: http
+
+  # Selecting pods with labels specified in 'server-chart.selectorLabels' from the Helm template.
+  selector:
+    {{- include "server-chart.selectorLabels" . | nindent 4 }}
+    

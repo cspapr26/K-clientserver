@@ -1,0 +1,22 @@
+# Specifies the Kubernetes API version for the Helm chart.
+apiVersion: v2
+
+# Specifies the name of the Helm chart.
+name: server-chart
+
+# Provides a brief description of the Helm chart, indicating that it is a server written in Python.
+description: A Server written in Python
+
+# Specifies whether the chart is of type 'application' in this case.
+# Application charts typically contain templates for deployment.
+type: application
+
+# Specifies the version number of the Helm chart itself.
+# Should be incremented whenever changes are made to the chart or its templates.
+# Follows Semantic Versioning (https://semver.org/).
+version: 0.1.0
+
+# Specifies the version number of the application being deployed.
+# This version does not adhere to Semantic Versioning and reflects the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: "1.16.0"
